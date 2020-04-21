@@ -2,10 +2,42 @@
 
 namespace App\Entity;
 
+
+use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
+use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\InvoiceRepository")
+ * @ApiResource(
+ *     subresourceOperations={
+ *          "api_customers_invoices_get_subresource"={
+ *              "normalization_context"={"groups"={"invoices_subresource"}}
+ *          }
+ *     },
+ *     itemOperations={"GET", "PUT", "DELETE",
+ *          "increment"={
+ *          "method"="post",
+ *          "path"="/invoices/{id}/increment",
+ *          "controller"="App\Controller\InvoiceIncrementationController",
+ *          "swagger_context"={
+ *              "summary"="Increment une facture",
+ *              "description"="Increment le chrono d'une facture donnee"
+ *          }
+ *        }
+ *     },
+ *     attributes={
+ *          "pagination_enabled" = true,
+ *          "pagination_items_per_page" = 20,
+ *          "order" : {"sentAt" : "desc"}
+ *     },
+ *     normalizationContext={"groups" = {"invoices_read"}},
+ *     denormalizationContext={"disable_type_enforcement"=true}
+ * )
+ * @ApiFilter(OrderFilter::class, properties={"amount", "sentAt"})
  */
 class Invoice
 {
@@ -13,34 +45,58 @@ class Invoice
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
+     * @Groups({"invoices_read", "customers_read", "invoices_subresource"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="float")
+     * @Groups({"invoices_read", "customers_read", "invoices_subresource"})
+     * @Assert\NotBlank(message="Le montant de la facture est obligatoire !")
+     * @Assert\Type(type="numeric", message="Le montant de la facture doit etre un numerique !")
      */
     private $amount;
 
     /**
      * @ORM\Column(type="datetime")
+     * @Groups({"invoices_read", "customers_read", "invoices_subresource"})
+     * @Assert\DateTime(message="La date doit etre au format YYY-MM-DD")
+     * @Assert\NotBlank(message="La date d'envoi doit etre renseignee")
      */
     private $sentAt;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"invoices_read", "customers_read", "invoices_subresource"})
+     * @Assert\NotBlank(message="Le status de la facture est obligatoire !")
+     * @Assert\Choice(choices={"SENT", "PAID", "CANCELLED"}, message="Le status doit etre SENT, PAID, CANCELLED ")
      */
     private $status;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Customer", inversedBy="invoices")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"invoices_read"})
+     * @Assert\NotBlank(message="Le client de la facture doit etre rensignee !")
      */
     private $customer;
 
     /**
      * @ORM\Column(type="integer")
+     * @Groups({"invoices_read", "customers_read", "invoices_subresource"})
+     * @Assert\NotBlank(message="Il faut absolument un chrono pour la facture !")
+     * @Assert\Type(type="integer", message="Le chrono doit etre un nombre")
      */
     private $chrono;
+
+    /**
+     * Permet de recuperer le user a qui appartient finalement la facture
+     * @Groups({"invoices_read", "invoices_subresource"})
+     * @return User
+     */
+    public function getUser() : User{
+        return $this->customer->getUser();
+    }
 
     public function getId(): ?int
     {
@@ -52,7 +108,7 @@ class Invoice
         return $this->amount;
     }
 
-    public function setAmount(float $amount): self
+    public function setAmount($amount): self        //public function setAmount(float $amount): self  // Enlever le float pour que toujour demande un nombre non chaine de caractere!
     {
         $this->amount = $amount;
 
@@ -64,7 +120,7 @@ class Invoice
         return $this->sentAt;
     }
 
-    public function setSentAt(\DateTimeInterface $sentAt): self
+    public function setSentAt($sentAt): self         // public function setSentAt(\DateTimeInterface $sentAt): self  //  Enlever le \DateTimeInterface pour que toujour demande une date correcte!
     {
         $this->sentAt = $sentAt;
 
@@ -100,7 +156,7 @@ class Invoice
         return $this->chrono;
     }
 
-    public function setChrono(int $chrono): self
+    public function setChrono($chrono): self                // public function setChrono(int $chrono): self // Enlever le int pour que toujour demande un nombre non chaine de caractere!
     {
         $this->chrono = $chrono;
 
