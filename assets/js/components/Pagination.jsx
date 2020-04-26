@@ -8,7 +8,7 @@ const Pagination = ({currentPage, itemsPerPage, length, onPageChanged}) => {
     const pagesCount = Math.ceil(length / itemsPerPage);
     const pages = [];
 
-    for (let i = 1; i <= pagesCount; i++){
+    for (let i = 1; i <= pagesCount; i++) {
         pages.push(i);
     }
 
@@ -33,9 +33,9 @@ const Pagination = ({currentPage, itemsPerPage, length, onPageChanged}) => {
     );
 }
 
-    Pagination.getData = (items, currentPage, itemsPerPage) => {
-        const start = currentPage * itemsPerPage - itemsPerPage;
-        return  items.slice(start, start + itemsPerPage);
-    }
+Pagination.getData = (items, currentPage, itemsPerPage) => {
+    const start = currentPage * itemsPerPage - itemsPerPage;
+    return items.slice(start, start + itemsPerPage);
+}
 
 export default Pagination;

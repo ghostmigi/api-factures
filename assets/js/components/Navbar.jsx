@@ -35,7 +35,7 @@ const Navbar = (props) => {
                 </li>
             </ul>
         </div>
-    </nav> );
+    </nav>);
 }
 
 export default Navbar;
