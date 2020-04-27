@@ -16,11 +16,15 @@ import HomePage from "./pages/HomePage";
 import CustomersPage from "./pages/CustomersPage";
 import CustomersPageWithPagination from "./pages/CustomersPageWithPagination";
 import InvoicesPage from "./pages/InvoicesPage";
+import LoginPage from "./pages/LoginPage";
+import AuthAPI from "./services/authAPI";
 
 // Need jQuery? Install it with "yarn add jquery", then uncomment to import it.
 // import $ from 'jquery';
 
 console.log('Hello Webpack Encore! Edit me in assets/js/app.js');
+
+AuthAPI.setup();
 
 const App = () => {
     return (
@@ -29,6 +33,7 @@ const App = () => {
 
             <main className="container pt-5">
                 <Switch>
+                    <Route path="/login" component={LoginPage}/>
                     <Route path="/invoices" component={InvoicesPage}/>
                     <Route path="/customers" component={CustomersPage}/>
                     <Route path="/" component={HomePage}/>
