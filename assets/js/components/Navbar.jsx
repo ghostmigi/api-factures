@@ -1,11 +1,17 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import AuthAPI from "../services/authAPI";
 import {NavLink} from "react-router-dom";
+import AuthContext from "../contexts/AuthContext";
 
-const Navbar = (props) => {
+const Navbar = ({history}) => {
+
+    const { isAuthenticated, setIsAuthenticated } = useContext(AuthContext);
 
     const handleLogout = () => {
         AuthAPI.logout();
+        setIsAuthenticated(false);
+        // push c'est qu'on ce deconnecte on va retourne vers la page login
+        history.push("/login");
     };
 
     return (<nav className="navbar navbar-expand-lg navbar-light bg-light">
@@ -29,21 +35,26 @@ const Navbar = (props) => {
                 </li>
             </ul>
             <ul className="navbar-nav ml-auto">
-                <li className="nav-item">
-                    <NavLink to="/register" className="nav-link">
-                        Inscription
-                    </NavLink>
-                </li>
-                <li className="nav-item">
-                    <NavLink to="/login" className="btn btn-success">
-                        Connexion !
-                    </NavLink>
-                </li>
+                {(!isAuthenticated && (
+                    <>
+                        <li className="nav-item">
+                            <NavLink to="/register" className="nav-link">
+                                Inscription
+                            </NavLink>
+                        </li>
+                        <li className="nav-item">
+                            <NavLink to="/login" className="btn btn-success">
+                                Connexion !
+                            </NavLink>
+                        </li>
+                    </>
+                )) || (
                 <li className="nav-item">
                     <button onClick={handleLogout} className="btn btn-danger">
                         Deconnexion
                     </button>
                 </li>
+                )}
             </ul>
         </div>
     </nav>);
