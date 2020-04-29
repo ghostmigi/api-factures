@@ -3,6 +3,7 @@ import axios from 'axios';
 import AuthAPI from "../services/authAPI";
 import AuthContext from "../contexts/AuthContext";
 import Field from "../components/forms/field";
+import {toast} from "react-toastify";
 // import CustomersAPI from "../services/customersAPI";
 
 const LoginPage = ({history}) => {
@@ -32,6 +33,7 @@ const LoginPage = ({history}) => {
             await AuthAPI.authenticate(credentials);
             setError("");
             setIsAuthenticated(true);
+            toast.success("Vous etes desormais connecte !");
             // Apres authentification rediriger vers page customers
             history.replace("/customers");
             // const data = await CustomersAPI.findAll();
@@ -40,6 +42,7 @@ const LoginPage = ({history}) => {
             setError(
                 "Aucun compte ne possede cette adresse ou alors les informations ne correspondant pas !"
             );
+            toast.error("Une erreur est survenue");
         }
     };
 
