@@ -45,7 +45,6 @@ const RegisterPage = ({history}) => {
         try {
             await userAPI.register(user);
             setErrors({});
-            // TODO : Flash success
             toast.success("Vous etes desormais inscrit, vous pouvez vous connectez !")
             history.replace('/login');
         } catch (error) {
@@ -57,7 +56,6 @@ const RegisterPage = ({history}) => {
                 });
                 setErrors(apiErrors);
             }
-            // TODO : Flash erreur
             toast.error("Des erreur dans votre formulaire !");
         }
     };
